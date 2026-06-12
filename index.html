@@ -3,103 +3,66 @@
 
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Avaliação Técnica - Israel Alcantara</title>
 
 <style>
 
 body{
-    margin:0;
-    background:#07111f;
-    color:white;
-    font-family:Arial, Helvetica, sans-serif;
+background:#07111f;
+color:white;
+font-family:Arial;
+padding:30px;
 }
-
 
 .container{
-
-    max-width:900px;
-    margin:40px auto;
-    background:#101c30;
-    padding:25px;
-    border-radius:15px;
-
+max-width:900px;
+margin:auto;
+background:#101c30;
+padding:25px;
+border-radius:15px;
 }
-
-
-h1{
-    text-align:center;
-}
-
 
 button{
-
-    background:#168cff;
-    color:white;
-    border:0;
-    padding:12px 20px;
-    border-radius:8px;
-    cursor:pointer;
-    margin:5px;
-
+background:#168cff;
+color:white;
+border:0;
+padding:12px 18px;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
 }
-
-
-button:hover{
-
-    opacity:.8;
-
-}
-
-
 
 input{
-
-    background:#07111f;
-    color:white;
-    border:1px solid #40506b;
-    padding:10px;
-    border-radius:6px;
-    margin:5px;
+background:#07111f;
+color:white;
+border:1px solid #445;
+padding:8px;
+border-radius:6px;
+margin:5px;
 }
-
 
 .produto{
-
-    border-bottom:1px solid #333;
-    padding:15px 0;
-
+padding:15px;
+border-bottom:1px solid #333;
 }
 
-
+.resumo{
+background:#07111f;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+}
 
 pre{
-
-    background:#050b14;
-    padding:15px;
-    border-radius:10px;
-    overflow:auto;
-
-}
-
-
-
-.esconder{
-
-display:none;
-
-}
-
-
-.resultado{
-
-background:#07111f;
+background:#050b14;
 padding:15px;
 border-radius:10px;
-
+overflow:auto;
 }
 
+.hidden{
+display:none;
+}
 
 </style>
 
@@ -114,21 +77,17 @@ border-radius:10px;
 
 <h1>Avaliação Técnica para Estagiário</h1>
 
-
-<p>
-<b>Candidato:</b> Israel Alcantara
-</p>
+<p><b>Candidato:</b> Israel Alcantara</p>
 
 
-<button onclick="mostrar('compras')">
+<button onclick="abrir('compras')">
 Parte 1 - Compras
 </button>
 
 
-<button onclick="mostrar('sql')">
+<button onclick="abrir('sql')">
 Parte 2 - SQL
 </button>
-
 
 
 
@@ -142,37 +101,27 @@ Parte 2 - SQL
 <div id="lista"></div>
 
 
-
 <button onclick="adicionar()">
 Adicionar Produto
 </button>
 
 
 
-<h2>Resumo da Compra</h2>
+<div class="resumo" id="resultado">
 
+</div>
 
-<div class="resultado" id="resultado">
 
 </div>
 
 
 
-</div>
 
 
+<div id="sql" class="hidden">
 
 
-
-
-
-
-
-<div id="sql" class="esconder">
-
-
-<h2>Questão 1 - Valor total</h2>
-
+<h2>Questão 1 - Valor total da compra</h2>
 
 <pre>
 SELECT 
@@ -190,10 +139,7 @@ ON c.ID_Produto = p.ID_Produto;
 
 
 
-
-
 <h2>Questão 2 - Produto mais vendido</h2>
-
 
 <pre>
 SELECT 
@@ -206,7 +152,7 @@ FROM Compras c
 INNER JOIN Produtos p
 ON c.ID_Produto = p.ID_Produto
 
-GROUP BY 
+GROUP BY
 p.ID_Produto,
 p.Nome_Produto
 
@@ -218,9 +164,7 @@ LIMIT 1;
 
 
 
-
 <h2>Questão 3 - Todos os produtos</h2>
-
 
 <pre>
 SELECT 
@@ -234,7 +178,7 @@ FROM Produtos p
 LEFT JOIN Compras c
 ON p.ID_Produto = c.ID_Produto
 
-GROUP BY 
+GROUP BY
 p.ID_Produto,
 p.Nome_Produto;
 </pre>
@@ -250,29 +194,27 @@ p.Nome_Produto;
 
 
 
-
-
 <script>
 
 
 let produtos=[
 
 {
-nome:"Arroz",
+nome:"Arroz Integral",
 quantidade:2,
 preco:15
 },
 
 {
-nome:"Feijão",
-quantidade:1,
-preco:8
+nome:"Feijão Preto",
+quantidade:5,
+preco:9
 },
 
 {
-nome:"Óleo",
-quantidade:3,
-preco:5
+nome:"Azeite de Oliva",
+quantidade:1,
+preco:45
 }
 
 ];
@@ -281,19 +223,16 @@ preco:5
 
 
 
-function mostrar(tela){
-
+function abrir(tela){
 
 document.getElementById("compras").className =
-tela=="compras" ? "" : "esconder";
+tela=="compras" ? "" : "hidden";
 
 
 document.getElementById("sql").className =
-tela=="sql" ? "" : "esconder";
-
+tela=="sql" ? "" : "hidden";
 
 }
-
 
 
 
@@ -315,16 +254,14 @@ html+=`
 
 <label>Produto:</label>
 
-<input 
-value="${p.nome}"
-onchange="produtos[${i}].nome=this.value">
+<input value="${p.nome}"
+onchange="produtos[${i}].nome=this.value;calcular()">
 
 
 
 <label>Quantidade:</label>
 
-<input 
-type="number"
+<input type="number"
 min="1"
 value="${p.quantidade}"
 onchange="produtos[${i}].quantidade=Number(this.value);calcular()">
@@ -333,8 +270,7 @@ onchange="produtos[${i}].quantidade=Number(this.value);calcular()">
 
 <label>Preço Unitário:</label>
 
-<input
-type="number"
+<input type="number"
 min="0"
 step="0.01"
 value="${p.preco}"
@@ -360,13 +296,11 @@ calcular();
 
 
 
-
 function adicionar(){
-
 
 produtos.push({
 
-nome:"Novo produto",
+nome:"Novo Produto",
 quantidade:1,
 preco:0
 
@@ -375,15 +309,13 @@ preco:0
 
 carregar();
 
-
 }
 
 
 
 
 
-
-function moeda(valor){
+function dinheiro(valor){
 
 return valor.toFixed(2).replace(".",",");
 
@@ -393,52 +325,84 @@ return valor.toFixed(2).replace(".",",");
 
 
 
+
+
 function calcular(){
 
 
-let total=0;
+let subtotal=0;
+
+let resumo="";
+
 
 
 produtos.forEach(p=>{
 
 
-total += p.quantidade * p.preco;
+let valor = p.quantidade * p.preco;
 
+
+subtotal += valor;
+
+
+
+resumo += `
+
+<p>
+<b>${p.nome} (${p.quantidade}×)</b>
+<br>
+
+R$ ${dinheiro(valor)}
+
+</p>
+
+`;
 
 });
 
 
 
-let desconto=0;
+let desconto = subtotal > 100 ? subtotal * 0.10 : 0;
 
 
-if(total>100){
-
-desconto=total*0.10;
-
-}
-
-
-
-let final=total-desconto;
+let final = subtotal - desconto;
 
 
 
 document.getElementById("resultado").innerHTML=`
 
-<p>Valor original: R$ ${moeda(total)}</p>
+<h2>Resumo da Compra</h2>
 
-<p>Desconto: R$ ${moeda(desconto)}</p>
+${resumo}
+
+
+<hr>
+
+
+<p>
+<b>Subtotal</b>
+<br>
+R$ ${dinheiro(subtotal)}
+</p>
+
+
+
+<p>
+<b>Desconto 10% (> R$100)</b>
+<br>
+− R$ ${dinheiro(desconto)}
+</p>
+
 
 <h2>
-Valor final: R$ ${moeda(final)}
+Valor final
+<br>
+R$ ${dinheiro(final)}
 </h2>
 
 `;
 
 }
-
-
 
 
 
