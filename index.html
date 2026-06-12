@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>Avaliação Técnica Estagiário</title>
+
+<style>
+
+body{
+background:#07111f;
+color:white;
+font-family:Arial;
+padding:30px;
+}
+
+.card{
+background:#101c30;
+padding:25px;
+border-radius:12px;
+max-width:900px;
+margin:auto;
+}
+
+button{
+background:#168cff;
+color:white;
+border:0;
+padding:10px 20px;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
+}
+
+input{
+background:#07111f;
+color:white;
+border:1px solid #445;
+padding:8px;
+border-radius:5px;
+margin:5px;
+}
+
+.item{
+margin-bottom:15px;
+padding:10px;
+border-bottom:1px solid #333;
+}
+
+pre{
+background:#050b14;
+padding:15px;
+border-radius:8px;
+overflow:auto;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="card">
+
+
+<h1>Avaliação Técnica para Estagiário</h1>
+
+
+<button onclick="abrir('compras')">
+Parte 1 - Compras
+</button>
+
+
+<button onclick="abrir('sql')">
+Parte 2 - SQL
+</button>
+
+
+
+
+<div id="compras">
+
+
+<h2>Lista de Produtos</h2>
+
+
+<div id="produtos"></div>
+
+
+<button onclick="adicionar()">
+Adicionar Produto
+</button>
+
+
+
+<h2>Resumo da Compra</h2>
+
+<div id="resultado"></div>
+
+
+</div>
+
+
+
+
+
+<div id="sql" class="hidden">
+
+
+<h2>Questão 1 - Valor total das compras</h2>
+
+
+<pre>
+SELECT 
+c.ID_Compra,
+p.Nome_Produto,
+c.Quantidade,
+p.Preco_Unitario,
+(c.Quantidade * p.Preco_Unitario) AS Valor_Total
+
+FROM Compras c
+
+INNER JOIN Produtos p
+ON c.ID_Produto = p.ID_Produto;
+</pre>
+
+
+
+<h2>Questão 2 - Produto mais vendido</h2>
+
+
+<pre>
+SELECT
+p.ID_Produto,
+p.Nome_Produto,
+SUM(c.Quantidade) AS Quantidade_Total
+
+FROM Compras c
+
+INNER JOIN Produtos p
+ON c.ID_Produto = p.ID_Produto
+
+GROUP BY
+p.ID_Produto,
+p.Nome_Produto
+
+ORDER BY Quantidade_Total DESC
+
+LIMIT 1;
+</pre>
+
+
+
+
+<h2>Questão 3 - Todos produtos</h2>
+
+
+<pre>
+SELECT
+p.ID_Produto,
+p.Nome_Produto,
+COALESCE(SUM(c.Quantidade),0)
+AS Quantidade_Total
+
+FROM Produtos p
+
+LEFT JOIN Compras c
+ON p.ID_Produto = c.ID_Produto
+
+GROUP BY
+p.ID_Produto,
+p.Nome_Produto;
+</pre>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<script>
+
+
+let produtos=[
+
+{
+nome:"Arroz",
+qtd:2,
+preco:15
+},
+
+{
+nome:"Feijão",
+qtd:1,
+preco:8
+},
+
+{
+nome:"Óleo",
+qtd:3,
+preco:5
+}
+
+];
+
+
+
+
+function abrir(tela){
+
+
+document.getElementById("compras").className =
+tela=="compras" ? "" : "hidden";
+
+
+document.getElementById("sql").className =
+tela=="sql" ? "" : "hidden";
+
+
+}
+
+
+
+
+
+
+
+function render(){
+
+
+let html="";
+
+
+
+produtos.forEach((p,i)=>{
+
+
+html+=`
+
+<div class="item">
+
+
+<label>
+Produto:
+</label>
+
+<input value="${p.nome}"
+onchange="produtos[${i}].nome=this.value">
+
+
+
+<label>
+Quantidade:
+</label>
+
+<input 
+type="number"
+min="1"
+value="${p.qtd}"
+onchange="produtos[${i}].qtd=Number(this.value);calcular()">
+
+
+
+<label>
+Preço Unitário:
+</label>
+
+<input
+type="number"
+min="0"
+step="0.01"
+value="${p.preco}"
+onchange="produtos[${i}].preco=Number(this.value);calcular()">
+
+
+
+</div>
+
+`;
+
+});
+
+
+
+document.getElementById("produtos").innerHTML=html;
+
+
+calcular();
+
+
+}
+
+
+
+
+
+
+function adicionar(){
+
+
+produtos.push({
+
+nome:"Novo Produto",
+qtd:1,
+preco:0
+
+});
+
+
+render();
+
+
+}
+
+
+
+
+
+
+function dinheiro(valor){
+
+return valor.toFixed(2).replace(".",",");
+
+}
+
+
+
+
+
+
+
+function calcular(){
+
+
+let total=0;
+
+
+produtos.forEach(p=>{
+
+total += p.qtd * p.preco;
+
+});
+
+
+
+let desconto=0;
+
+
+
+if(total>100){
+
+desconto=total*0.10;
+
+}
+
+
+
+let final=total-desconto;
+
+
+
+document.getElementById("resultado").innerHTML=`
+
+<p>
+Valor original:
+R$ ${dinheiro(total)}
+</p>
+
+
+<p>
+Desconto:
+R$ ${dinheiro(desconto)}
+</p>
+
+
+<h2>
+Valor final:
+R$ ${dinheiro(final)}
+</h2>
+
+`;
+
+}
+
+
+
+render();
+
+
+
+</script>
+
+
+</body>
+
+</html>
